@@ -1,0 +1,93 @@
+version: '3'
+
+networks:
+  backend:
+
+services:
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx-laracast
+    ports:
+      - "8000:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - backend
+
+  mysql:
+    image: mysql:5.7.31
+    container_name: mysql-laracast
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: laracast
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - backend
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php-laracast
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - "9000:9000"
+    networks:
+      - backend
+  composer:
+    image: composer:latest
+    container_name: composer
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - php
+    networks:
+      - backend
+  artisan:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: artisan-laracast
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - mysql
+    working_dir: /var/www/html
+    entrypoint: ['php', '/var/www/html/artisan']
+    networks:
+      - backend
+#  npm:
+#    image: npm:latest
+#    container_name: npm-laracast
+#    volumes:
+#      - ./src:/var/www/html
+#    working_dir: /var/www/html
+#    entrypoint: ['npm']
+
+
+#phpmyadmin:
+#  image: phpmyadmin/phpmyadmin
+#  restart: always
+#  links:
+#    - mysql
+#  ports:
+#    - 8183:80
+#  environment:
+#    MYSQL_USERNAME: admin
+#    MYSQL_ROOT_PASSWORD: admin
+#    PMA_ARBITRARY: 1
