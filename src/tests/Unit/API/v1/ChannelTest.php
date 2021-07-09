@@ -3,6 +3,9 @@
 namespace Tests\Unit\API\v1\Channel;
 
 use App\Channel;
+use App\User;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
@@ -12,13 +15,34 @@ use Tests\TestCase;
  */
 class ChannelTest extends TestCase
 {
+    public function registerRolesAndPermissions()
+    {
+        $roleInDatabase = Role::where('name', config('permission.default_roles')[0]);
+        if ($roleInDatabase->count() < 1) {
+            foreach (config('permission.default_roles') as $role) {
+                Role::create([
+                    'name' => $role
+                ]);
+            }
+        }
+
+        $permissionInDatabase = Permission::where('name', config('permission.default_permissions')[0]);
+        if ($permissionInDatabase->count() < 1) {
+            foreach (config('permission.default_permissions') as $permission) {
+                Permission::create([
+                    'name' => $permission
+                ]);
+            }
+        }
+    }
+
     /**
      * Test channels accessible
      */
     public function test_all_Channels_list_should_be_accessible()
     {
         $response = $this->get(route('channel.all'));
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
     }
 
     /**
@@ -26,8 +50,13 @@ class ChannelTest extends TestCase
      */
     public function test_create_channel_should_be_validated()
     {
-        $response = $this->postJson(route('channel.create'));
-        $response->assertStatus(422);
+        // add permission to user for create channel
+        $this->registerRolesAndPermissions();
+        $user = factory(User::class)->create();
+        $user->givePermissionTo('channel_management');
+
+        $response = $this->actingAs($user)->postJson(route('channel.create'));
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY); //422
     }
 
     /**
@@ -35,10 +64,15 @@ class ChannelTest extends TestCase
      */
     public function test_create_new_channel_can_be_created()
     {
-        $response = $this->postJson(route('channel.create'), [
+        // add permission to user for create channel
+        $this->registerRolesAndPermissions();
+        $user = factory(User::class)->create();
+        $user->givePermissionTo('channel_management');
+
+        $response = $this->actingAs($user)->postJson(route('channel.create'), [
             'name' => 'Laravel'
         ]);
-        $response->assertStatus(201);
+        $response->assertStatus(Response::HTTP_CREATED); //201
     }
 
     /**
@@ -46,7 +80,12 @@ class ChannelTest extends TestCase
      */
     public function test_update_channel_should_be_validated()
     {
-        $response = $this->json('PUT', route('channel.update'), []);
+        // add permission to user for create channel
+        $this->registerRolesAndPermissions();
+        $user = factory(User::class)->create();
+        $user->givePermissionTo('channel_management');
+
+        $response = $this->actingAs($user)->json('PUT', route('channel.update'), []);
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
@@ -55,10 +94,15 @@ class ChannelTest extends TestCase
      */
     public function test_channel_can_be_updated()
     {
+        // add permission to user for create channel
+        $this->registerRolesAndPermissions();
+        $user = factory(User::class)->create();
+        $user->givePermissionTo('channel_management');
+
         $channel = factory(Channel::class)->create([
             'name' => 'laravel'
         ]);
-        $response = $this->json('PUT', route('channel.update'), [
+        $response = $this->actingAs($user)->json('PUT', route('channel.update'), [
             'id' => $channel->id,
             'name' => 'VueJs',
         ]);
@@ -73,7 +117,12 @@ class ChannelTest extends TestCase
      */
     public function test_channel_delete_should_be_validated()
     {
-        $response = $this->json('DELETE', route('channel.delete'), []);
+        // add permission to user for create channel
+        $this->registerRolesAndPermissions();
+        $user = factory(User::class)->create();
+        $user->givePermissionTo('channel_management');
+
+        $response = $this->actingAs($user)->json('DELETE', route('channel.delete'), []);
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
@@ -82,10 +131,15 @@ class ChannelTest extends TestCase
      */
     public function test_channel_can_be_deleted()
     {
+        // add permission to user for create channel
+        $this->registerRolesAndPermissions();
+        $user = factory(User::class)->create();
+        $user->givePermissionTo('channel_management');
+
         $channel = factory(Channel::class)->create([
             'name' => 'laravel'
         ]);
-        $response = $this->json('PUT', route('channel.update'), [
+        $response = $this->actingAs($user)->json('PUT', route('channel.update'), [
             'id' => $channel->id,
             'name' => 'VueJs',
         ]);
