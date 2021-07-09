@@ -3,8 +3,6 @@
 namespace Tests\Unit\API\v1\Channel;
 
 use App\Channel;
-use App\Http\Controllers\API\V01\Channel\ChannelController;
-use GuzzleHttp\Psr7\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
