@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Thread extends Model
 {
-    protected $fillable = ['title', 'slug', 'content'];
+    protected $guarded = [];
 
     public function channel()
     {

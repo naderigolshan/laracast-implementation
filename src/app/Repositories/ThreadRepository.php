@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Thread;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ThreadRepository
 {
@@ -18,15 +19,18 @@ class ThreadRepository
         return Thread::whereSlug($slug)->whereFlag(1)->first();
     }
     /**
-     * @return thread
      * @param Request $request
      */
     public function create_thread(Request $request)
     {
-        return Thread::create([
-            'title' => $request->name,
-            'slug' => $request->email,
-            'content' => Hash::make($request->password),
+        Thread::create([
+            'title' => $request->input('title'),
+            'slug' => Str::slug($request->input('title')),
+            'content' => $request->input('content'),
+            'user_id' => auth()->user()->id,
+            'channel_id' => $request->input('channel_id'),
         ]);
     }
+
+
 }
