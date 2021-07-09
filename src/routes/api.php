@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1/')->group(function () {
     // Authentication routes
     include __DIR__. '/v1/auth_routes.php';
-    // Authentication routes
+    // Channel routes
     include __DIR__. '/v1/channel_routes.php';
+    // Thread routes
+    include __DIR__. '/v1/thread_routes.php';
 });
