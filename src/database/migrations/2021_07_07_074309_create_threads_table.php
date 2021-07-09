@@ -25,7 +25,7 @@ class CreateThreadsTable extends Migration
             $table->foreign('channel_id')->references('id')->on('channels')->onDelete('cascade');
 
             // best answer_id
-            $table->unsignedBigInteger('answer_id');
+            $table->unsignedBigInteger('answer_id')->nullable();
 
             $table->boolean('flag')->default(1);
             $table->timestamps();
