@@ -7,7 +7,7 @@ Route::prefix('/channel')->group(function () {
 
     Route::get('/all', [ChannelController::class, 'getAllChannelsList'])->name('channel.all');
 
-    Route::middleware('channel_management')->group(function () {
+    Route::middleware(['can:channel_management', 'auth:sanctum'])->group(function () {
 
         Route::post('/create', [ChannelController::class, 'createNewChannel'])->name('channel.create');
         Route::put('/update', [ChannelController::class, 'updateChannel'])->name('channel.update');
