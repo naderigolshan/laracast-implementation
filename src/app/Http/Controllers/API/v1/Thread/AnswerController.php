@@ -28,16 +28,33 @@ class AnswerController extends Controller
 
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'content' => 'required',
+            'thread_id' => 'required'
+        ]);
+        $answer = $this->answer->create_answer($request);
+        return \response()->json([
+            'message' => 'answer submitted successfully'
+        ], Response::HTTP_CREATED);
+
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Answer $answer)
     {
-        //
+        $request->validate([
+            'content' => 'required',
+        ]);
+        $this->answer->update_answer($request, $answer);
+        return response()->json([
+            'message' => "answer updated successfully"
+        ], Response::HTTP_OK);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, Answer $answer)
     {
-        //
+        $this->answer->delete_answer($answer);
+        return response()->json([
+            'message' => "answer deleted successfully"
+        ], Response::HTTP_OK);
     }
 }

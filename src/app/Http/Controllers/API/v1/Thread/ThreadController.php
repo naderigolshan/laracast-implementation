@@ -62,8 +62,6 @@ class ThreadController extends Controller
             'channel_id' => 'required'
         ]);
 
-        $thread = Thread::find($id);
-
         if (Gate::forUser(Auth::user())->allows('manage-thread', $request)) {
             $this->thread->update_thread($id, $request);
 

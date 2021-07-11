@@ -15,55 +15,36 @@ class AnswerRepository
         return Answer::query()->latest()->get();
     }
 
-    public function getThreadBySlug($slug)
-    {
-        return Thread::whereSlug($slug)->whereFlag(1)->first();
-    }
-
     /**
      * @param Request $request
      */
     public function create_answer(Request $request)
     {
-        Thread::create([
-            'title' => $request->input('title'),
-            'slug' => Str::slug($request->input('title')),
+        // adding answer to list of answers for a thread by eloquent
+        Thread::find($request->thread_id)->answers()->create([
             'content' => $request->input('content'),
-            'user_id' => auth()->user()->id,
-            'channel_id' => $request->input('channel_id'),
+            'user_id' => Auth()->user()->id,
         ]);
     }
 
     /**
-     * @param $id
      * @param Request $request
+     * @param Answer $answer
      */
-    public function update_answer($id, $request)
+    public function update_answer(Request $request, Answer $answer)
     {
-        $thread = Thread::find($id);
-
-        if (!$request->has('answer_id')) {
-            $thread->update([
-                'title' => $request->input('title'),
-                'slug' => Str::slug($request->input('title')),
-                'content' => $request->input('content'),
-                'channel_id' => $request->input('channel_id'),
-            ]);
-        } else {
-            $thread->update([
-                'answer_id' => $request->input('answer_id')
-            ]);
-        }
+        $answer->update([
+            'content' => $request->input('content'),
+        ]);
     }
 
     /**
-     * @param Thread $thread
+     * @param Answer $answer
      * @throws \Exception
      */
-    public function destroy_answer($id)
+    public function delete_answer(Answer $answer)
     {
-        Thread::find($id)->delete();
+        $answer->delete();
     }
-
 
 }
