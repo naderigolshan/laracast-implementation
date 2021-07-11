@@ -5,10 +5,7 @@ namespace Tests\Feature\API\v1;
 use App\Channel;
 use App\Thread;
 use App\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Foundation\Testing\RefreshDatabase;;
 use Laravel\Sanctum\Sanctum;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
@@ -16,7 +13,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class ThreadTest extends TestCase
 {
-    use WithoutMiddleware;
+    use WithoutMiddleware, RefreshDatabase;
 
     /**
      * @test

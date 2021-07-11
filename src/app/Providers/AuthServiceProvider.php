@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Answer;
 use App\Thread;
 use App\User;
 use Illuminate\Http\Request;
@@ -28,14 +29,17 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-//        Gate::before(function ($user, $ability) {
-//            return $user->hasRole('Super_Admin') ? true : null;
-//        });
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('Super_Admin') ? true : null;
+        });
 
         Gate::define('manage-thread', function (User $user, Request $request){
             $thread = Thread::find($request->id);
-//            dd($thread->user_id .'.......'. $request->id);
             return $thread->user_id == $user->id;
+        });
+
+        Gate::define('manage-answer', function (User $user, Answer $answer){
+            return $answer->user_id == $user->id;
         });
 
     }

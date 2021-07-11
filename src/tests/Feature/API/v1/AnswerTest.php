@@ -13,6 +13,7 @@ use Tests\TestCase;
 
 class AnswerTest extends TestCase
 {
+    use RefreshDatabase;
     /**
      * @test
      */
@@ -75,6 +76,7 @@ class AnswerTest extends TestCase
 
         $answer = factory(Answer::class)->create([
             'content' => 'Foo',
+            'user_id' => $user->id
         ]);
         $response = $this->putJson(route('answers.update', [$answer]), [
             'content' => 'Bar',
@@ -98,7 +100,9 @@ class AnswerTest extends TestCase
         $user = factory(User::class)->create();
         Sanctum::actingAs($user);
 
-        $answer = factory(Answer::class)->create();
+        $answer = factory(Answer::class)->create([
+            'user_id' => $user->id
+        ]);
 
         $response = $this->delete(route('answers.destroy', [$answer]));
 
