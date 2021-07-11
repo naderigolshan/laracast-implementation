@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\API\v1\Channel;
+namespace Tests\Feature\API\v1;
 
 use App\Channel;
 use App\User;
@@ -138,7 +138,6 @@ class ChannelTest extends TestCase
     public function test_channel_can_be_deleted()
     {
         // add permission to user for create channel
-        $this->registerRolesAndPermissions();
         $user = factory(User::class)->create();
         Sanctum::actingAs($user);
         $user->givePermissionTo('channel_management');
@@ -150,9 +149,7 @@ class ChannelTest extends TestCase
             'id' => $channel->id,
             'name' => 'VueJs',
         ]);
-
-        $updatedChannel = Channel::find($channel->id);
         $response->assertStatus(Response::HTTP_OK);
-        $this->assertEquals('VueJs', $updatedChannel->name);
+        $this->assertTrue(Channel::where('id', $channel->id)->count() === 0);
     }
 }
