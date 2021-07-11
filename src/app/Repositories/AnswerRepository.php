@@ -2,16 +2,17 @@
 
 namespace App\Repositories;
 
+use App\Answer;
 use App\Thread;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class ThreadRepository
+class AnswerRepository
 {
 
-    public function get_all_available_thread()
+    public function get_all_available_answer()
     {
-        return Thread::whereFlag(1)->latest()->get();
+        return Answer::query()->latest()->get();
     }
 
     public function getThreadBySlug($slug)
@@ -22,7 +23,7 @@ class ThreadRepository
     /**
      * @param Request $request
      */
-    public function create_thread(Request $request)
+    public function create_answer(Request $request)
     {
         Thread::create([
             'title' => $request->input('title'),
@@ -37,7 +38,7 @@ class ThreadRepository
      * @param $id
      * @param Request $request
      */
-    public function update_thread($id, $request)
+    public function update_answer($id, $request)
     {
         $thread = Thread::find($id);
 
@@ -59,10 +60,9 @@ class ThreadRepository
      * @param Thread $thread
      * @throws \Exception
      */
-    public function destroy_thread($id)
+    public function destroy_answer($id)
     {
         Thread::find($id)->delete();
-//        $thread->delete();
     }
 
 

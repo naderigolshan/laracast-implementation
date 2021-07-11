@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1\Thread;
 use App\Http\Controllers\Controller;
 use App\Repositories\ThreadRepository;
 use App\Thread;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -48,4 +49,49 @@ class ThreadController extends Controller
             'message' => "Thread created successfully"
         ], Response::HTTP_CREATED);
     }
+
+    public function update(Request $request, $id)
+    {
+        $request->has('answer_id')
+            ? $request->validate([
+            'answer_id' => 'required'
+        ])
+            : $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+            'channel_id' => 'required'
+        ]);
+
+        $thread = Thread::find($id);
+
+        if (Gate::forUser(Auth::user())->allows('manage-thread', $request)) {
+            $this->thread->update_thread($id, $request);
+
+            return response()->json([
+                'message' => "Thread updated successfully"
+            ], Response::HTTP_OK);
+        }
+        return response()->json([
+            'message' => "access denied"
+        ], Response::HTTP_FORBIDDEN);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $thread = Thread::find($request->id);
+
+        if (Gate::forUser(auth()->user())->allows('manage-thread', $request)) {
+            resolve(ThreadRepository::class)->destroy_thread($request->id);
+
+            return \response()->json([
+                'message' => 'thread deleted successfully'
+            ], Response::HTTP_OK);
+        }
+
+        return \response()->json([
+            'message' => 'access denied'
+        ], Response::HTTP_FORBIDDEN);
+    }
+
+
 }

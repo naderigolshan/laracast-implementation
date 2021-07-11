@@ -146,7 +146,7 @@ class ChannelTest extends TestCase
         $channel = factory(Channel::class)->create([
             'name' => 'laravel'
         ]);
-        $response = $this->json('PUT', route('channel.update'), [
+        $response = $this->json('DELETE', route('channel.delete'), [
             'id' => $channel->id,
             'name' => 'VueJs',
         ]);

@@ -82,7 +82,7 @@ class AuthTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_logged_in_user_can_ogout()
+    public function test_logged_in_user_can_logout()
     {
         $user = factory(User::class)->make();
         $response = $this->actingAs($user)->postJson(route('auth.logout'));
