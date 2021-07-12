@@ -21,7 +21,6 @@ class UserRepository
         ]);
     }
 
-
     /**
      * @param $id (s)
      * @return user(s)
@@ -29,5 +28,19 @@ class UserRepository
     public function find($id)
     {
         return User::find($id);
+    }
+
+    /**
+     * @param $id (s)
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function leaderboards($id)
+    {
+        return User::query()->orderByDesc('score')->paginate(20);
+    }
+
+    public function isBlock()
+    {
+        return (bool) auth()->user()->is_block;
     }
 }

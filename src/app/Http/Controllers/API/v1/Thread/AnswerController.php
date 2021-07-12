@@ -9,9 +9,7 @@ use App\Repositories\AnswerRepository;
 use App\Repositories\SubscribeRepository;
 use App\Repositories\ThreadRepository;
 use App\Repositories\UserRepository;
-use App\Subscribe;
 use App\Thread;
-use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Gate;
@@ -29,6 +27,10 @@ class AnswerController extends Controller
      */
     public function __construct()
     {
+        $this->middleware(['user-block'])->except([
+            'index',
+        ]);
+
         $this->answer = resolve(AnswerRepository::class);
         $this->subscribe = resolve(SubscribeRepository::class);
         $this->thread = resolve(ThreadRepository::class);
@@ -59,6 +61,11 @@ class AnswerController extends Controller
         $users = $this->subscribe->getNotifiableUsers($thread->id);
         $notifiable_user = $this->user->find($users);
         Notification::send($notifiable_user, new NewReplySubmitted($thread));
+
+        // increase user score
+        if (Thread::find($request->input('thread_id'))->user_id !== auth()->id()) {
+            auth()->user()->increment('score', 10);
+        }
 
         return \response()->json([
             'message' => 'answer submitted successfully'

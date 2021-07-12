@@ -6,7 +6,6 @@ use App\Answer;
 use App\Thread;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Laravel\Sanctum\Sanctum;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
@@ -28,6 +27,9 @@ class AnswerTest extends TestCase
      */
     public function create_answer_should_be_validated()
     {
+        $user = factory(User::class)->create();
+        Sanctum::actingAs($user);
+
         $response = $this->postJson(route('answers.store'), []);
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
         $response->assertJsonValidationErrors(['thread_id', 'content']);
@@ -38,7 +40,6 @@ class AnswerTest extends TestCase
      */
     public function answer_can_be_created_for_thread()
     {
-        $this->withoutExceptionHandling();
         $user = factory(User::class)->create();
         Sanctum::actingAs($user);
 
@@ -59,8 +60,31 @@ class AnswerTest extends TestCase
     /**
      * @test
      */
+    public function user_score_will_increase_by_submit_new_answer()
+    {
+        $user = factory(User::class)->create();
+        Sanctum::actingAs($user);
+
+        $thread = factory(Thread::class)->create();
+
+        $response = $this->postJson(route('answers.store'), [
+            'content' => 'Foo',
+            'thread_id' => $thread->id,
+        ]);
+        $response->assertStatus(Response::HTTP_CREATED);
+        $user->refresh();
+        $this->assertEquals(10, $user->score);
+
+    }
+
+    /**
+     * @test
+     */
     public function update_answer_should_be_validated()
     {
+        $user = factory(User::class)->create();
+        Sanctum::actingAs($user);
+
         $answer = factory(Answer::class)->create();
         $response = $this->putJson(route('answers.update', [$answer]), []);
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -96,8 +120,6 @@ class AnswerTest extends TestCase
      */
     public function answer_can_be_deleted()
     {
-        $this->withoutExceptionHandling();
-
         $user = factory(User::class)->create();
         Sanctum::actingAs($user);
 
