@@ -38,6 +38,7 @@ class AnswerTest extends TestCase
      */
     public function answer_can_be_created_for_thread()
     {
+        $this->withoutExceptionHandling();
         $user = factory(User::class)->create();
         Sanctum::actingAs($user);
 

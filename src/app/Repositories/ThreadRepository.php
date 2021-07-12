@@ -65,5 +65,10 @@ class ThreadRepository
 //        $thread->delete();
     }
 
+    public function get_thread($id)
+    {
+        return Thread::find($id);
+    }
+
 
 }
