@@ -50,7 +50,7 @@ class ThreadController extends Controller
 
         $this->thread->create_thread($request);
         return response()->json([
-            'message' => "Thread created successfully"
+            'message' => "thread created successfully"
         ], Response::HTTP_CREATED);
     }
 
@@ -70,7 +70,7 @@ class ThreadController extends Controller
             $this->thread->update_thread($id, $request);
 
             return response()->json([
-                'message' => "Thread updated successfully"
+                'message' => "thread updated successfully"
             ], Response::HTTP_OK);
         }
         return response()->json([
